@@ -1,21 +1,27 @@
-# Wallet App Front-end
+<h1 align="center">👛 Wallet App Front-end</h1>
 
-This is an finances management dashboard made with JavaScript, HTML and CSS.
-The main objective is the user add and delete finances releases (that are saved in the api), and inform him the balance of the month.
+<p align="center">
+  This is an finances management dashboard made with JavaScript, HTML and CSS.
+  The main objective is the user add and delete finances releases (that are saved in the api), and inform him the balance of the month.
+</p>
 
-<img alt="wallet-app-sample-image" src="https://github.com/AndrePort/wallet-app-frontend/blob/master/assets/img/Preview.png" height="670">
+<br>
 
-## Live application
+<p align="center">
+  <img alt="wallet-app-sample-image" src=".github/sample.png" width="100%">
+</p>
+
+## 🖵 Live application
 
 https://andreport.github.io/wallet-app-frontend/
 
-## Technologies used
+## 🚀 Technologies
 
 - JavaScript
 - HTML
 - CSS
 
-## Instructions to run
+## 💻 Instructions to run
 
 1. Clone the application:
 
@@ -32,5 +38,5 @@ Open the index.html file with some browser
 3. You can create your own user or use the test user:
 
 ```
-teste@teste.com
+user@example.com
 ```
