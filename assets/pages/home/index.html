@@ -17,6 +17,9 @@
         class="logo-navbar"
         alt="Logo Wallet App"
         />
+        <div class="navbar-calendar-container">
+          <input class="input-calendar" id="selected-date" type="date" />
+        </div>
         <div id="navbar-user-container" class="navbar-user-container">
           <div id="navbar-user-avatar" class="navbar-user-avatar">
           </div>
@@ -34,15 +37,7 @@
             <h2>Últimos lançamentos</h2>
             <button onclick="onOpenModal()"class="small">Adicionar</button>
           </div>
-          <table id="finances-table">
-            <tr>
-              <th>Título</th>
-              <th>Categoria</th>
-              <th>Data</th>
-              <th class="center">Valor</th>
-              <th class="right">Ação</th>
-            </tr>
-          </table>
+          <table id="finances-table"></table>
         </div>
       </div>
     </div>
@@ -58,7 +53,6 @@
             class="mt smaller"
             type="text"
             id="input-title"
-            step="any"
             name="input-title"
             placeholder="Ex: Conta de energia"
             required

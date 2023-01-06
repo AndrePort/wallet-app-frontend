@@ -1,17 +1,64 @@
+const onLogout = () => {
+  localStorage.clear();
+  window.open("../../../index.html", "_self");
+};
+
+const onDeleteItem = async (id) => {
+  try {
+    const email = localStorage.getItem("@WalletApp:userEmail");
+
+    await fetch(`https://mp-wallet-app-api.herokuapp.com/finances/${id}`, {
+      method: "DELETE",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        email: email,
+      },
+    });
+    onLoadFinancesData();
+  } catch (error) {
+    alert("Error ao deletar o item.");
+  }
+};
+
 const renderFinancesList = (data) => {
-  const table = document.getElementById("finances-table")
-  /*
-    <tr>
-      <td>titulo1</td>
-      <td>titulo1</td>
-      <td>titulo1</td>
-      <td class="center">titulo1</td>
-      <td class="right">titulo1</td>
-    </tr>
-  */
-  data.map(item => {
+  const table = document.getElementById("finances-table");
+  table.innerHTML = "";
+
+  const tableHeader = document.createElement("tr");
+
+  const titleText = document.createTextNode("Título");
+  const titleElement = document.createElement("th");
+  titleElement.appendChild(titleText);
+  tableHeader.appendChild(titleElement);
+
+  const categoryText = document.createTextNode("Categoria");
+  const categoryElement = document.createElement("th");
+  categoryElement.appendChild(categoryText);
+  tableHeader.appendChild(categoryElement);
+
+  const dateText = document.createTextNode("Data");
+  const dateElement = document.createElement("th");
+  dateElement.appendChild(dateText);
+  tableHeader.appendChild(dateElement);
+
+  const valueText = document.createTextNode("Valor");
+  const valueElement = document.createElement("th");
+  valueElement.className = "center";
+  valueElement.appendChild(valueText);
+  tableHeader.appendChild(valueElement);
+
+  const actionText = document.createTextNode("Ação");
+  const actionElement = document.createElement("th");
+  actionElement.className = "right";
+  actionElement.appendChild(actionText);
+  tableHeader.appendChild(actionElement);
+
+  table.appendChild(tableHeader);
+
+  data.map((item) => {
     const tableRow = document.createElement("tr");
-    tableRow.className = "mt smaller"
 
     // title
     const titleTd = document.createElement("td");
@@ -21,15 +68,15 @@ const renderFinancesList = (data) => {
 
     // category
     const categoryTd = document.createElement("td");
-    const categoryText = document.createTextNode(
-      new Date(item.date).toLocaleDateString()
-    );
+    const categoryText = document.createTextNode(item.name);
     categoryTd.appendChild(categoryText);
     tableRow.appendChild(categoryTd);
 
     // date
     const dateTd = document.createElement("td");
-    const dateText = document.createTextNode(new Date(item.date).toISOString());
+    const dateText = document.createTextNode(
+      new Date(item.date).toLocaleDateString()
+    );
     dateTd.appendChild(dateText);
     tableRow.appendChild(dateTd);
 
@@ -44,34 +91,33 @@ const renderFinancesList = (data) => {
     );
     valueTd.appendChild(valueText);
     tableRow.appendChild(valueTd);
+
+    // delete
+    const deleteTd = document.createElement("td");
+    deleteTd.style.cursor = "pointer";
+    deleteTd.onclick = () => onDeleteItem(item.id);
+    deleteTd.className = "right";
+    const deleteText = document.createTextNode("Deletar");
+    deleteTd.appendChild(deleteText);
+    tableRow.appendChild(deleteTd);
+
+    // table add tablerow
+    table.appendChild(tableRow);
   });
-
-  // delete
-  const deleteTd = document.createElement("td");
-  deleteTd.className = "right";
-  const deleteText = document.createTextNode("deletar");
-  deleteTd.appendChild(deleteText);
-  tableRow.appendChild(deleteTd);
-
-  // table add tablerow
-  table.appendChild(tableRow);
 };
-
-
-
 
 const renderFinanceElements = (data) => {
   const totalItems = data.length;
   const revenues = data
-  .filter((item) => Number(item.value) > 0)
-  .reduce((acc, item) => acc + Number(item,value), 0);
+    .filter((item) => Number(item.value) > 0)
+    .reduce((acc, item) => acc + Number(item.value), 0);
   const expenses = data
-  .filter((item) => Number(item.value) > 0)
-  .reduce((acc, item) => acc + Number(item,value), 0);
+    .filter((item) => Number(item.value) < 0)
+    .reduce((acc, item) => acc + Number(item.value), 0);
   const totalValue = revenues + expenses;
 
   // render total items
-  const financeCard1 = document.getElementById("finance-car-1");
+  const financeCard1 = document.getElementById("finance-card-1");
   financeCard1.innerHTML = "";
 
   const totalSubtext = document.createTextNode("Total de lançamentos");
@@ -81,12 +127,13 @@ const renderFinanceElements = (data) => {
 
   const totalText = document.createTextNode(totalItems);
   const totalElement = document.createElement("h1");
+  totalElement.id = "total-element";
   totalElement.className = "mt smaller";
   totalElement.appendChild(totalText);
   financeCard1.appendChild(totalElement);
 
-    // render revenue
-  const financeCard2 = document.getElementById("finance-car-2");
+  // render revenue
+  const financeCard2 = document.getElementById("finance-card-2");
   financeCard2.innerHTML = "";
 
   const revenueSubtext = document.createTextNode("Receitas");
@@ -101,12 +148,13 @@ const renderFinanceElements = (data) => {
     }).format(revenues)
   );
   const revenueTextElement = document.createElement("h1");
+  revenueTextElement.id = "revenue-element";
   revenueTextElement.className = "mt smaller";
   revenueTextElement.appendChild(revenueText);
   financeCard2.appendChild(revenueTextElement);
 
   // render expenses
-  const financeCard3 = document.getElementById("finance-car-3");
+  const financeCard3 = document.getElementById("finance-card-3");
   financeCard3.innerHTML = "";
 
   const expensesSubtext = document.createTextNode("Despesas");
@@ -121,12 +169,13 @@ const renderFinanceElements = (data) => {
     }).format(expenses)
   );
   const expensesTextElement = document.createElement("h1");
+  expensesTextElement.id = "expenses-element";
   expensesTextElement.className = "mt smaller";
   expensesTextElement.appendChild(expensesText);
   financeCard3.appendChild(expensesTextElement);
 
   // render balance
-  const financeCard4 = document.getElementById("finance-car-4");
+  const financeCard4 = document.getElementById("finance-card-4");
   financeCard4.innerHTML = "";
 
   const balanceSubtext = document.createTextNode("Balanço");
@@ -141,18 +190,19 @@ const renderFinanceElements = (data) => {
     }).format(totalValue)
   );
   const balanceTextElement = document.createElement("h1");
+  balanceTextElement.id = "balance-element";
   balanceTextElement.className = "mt smaller";
   balanceTextElement.style.color = "#5936CD";
   balanceTextElement.appendChild(balanceText);
   financeCard4.appendChild(balanceTextElement);
-}
+};
 
 const onLoadFinancesData = async () => {
   try {
-    const date = "2022-12-15"
+    const dateInputValue = document.getElementById("selected-date").value;
     const email = localStorage.getItem("@WalletApp:userEmail");
     const result = await fetch(
-      `https://mp-wallet-app-api.herokuapp.com/finances?date=${date}`,
+      `https://mp-wallet-app-api.herokuapp.com/finances?date=${dateInputValue}`,
       {
         method: "GET",
         headers: {
@@ -164,28 +214,28 @@ const onLoadFinancesData = async () => {
     renderFinanceElements(data);
     renderFinancesList(data);
     return data;
-  } catch(error) {
-    return { error }
+  } catch (error) {
+    return { error };
   }
-}
-
+};
 
 const onLoadUserInfo = () => {
-  const email = localStorage.getItem("walletApp:userEmail");
-  const name = localStorage.getItem("walletApp:userName");
+  const email = localStorage.getItem("@WalletApp:userEmail");
+  const name = localStorage.getItem("@WalletApp:userName");
 
   const navbarUserInfo = document.getElementById("navbar-user-container");
   const navbarUserAvatar = document.getElementById("navbar-user-avatar");
 
-
   // add user email
   const emailElement = document.createElement("p");
   const emailText = document.createTextNode(email);
-  emailElement.appendChild(emailText)
+  emailElement.appendChild(emailText);
   navbarUserInfo.appendChild(emailElement);
 
   // add logout link
   const logoutElement = document.createElement("a");
+  logoutElement.onclick = () => onLogout();
+  logoutElement.style.cursor = "pointer";
   const logoutText = document.createTextNode("sair");
   logoutElement.appendChild(logoutText);
   navbarUserInfo.appendChild(logoutElement);
@@ -213,9 +263,9 @@ const onLoadCategories = async () => {
       categoriesSelect.append(option);
     });
   } catch (error) {
-    alert("Error ao carregar categorias")
+    alert("Error ao carregar categorias");
   }
-}
+};
 
 const onOpenModal = () => {
   const modal = document.getElementById("modal");
@@ -239,14 +289,17 @@ const onCallAddFinance = async (data) => {
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
           email: email,
         },
         body: JSON.stringify(data),
       }
     );
+
+    const user = await response.json();
+    return user;
   } catch (error) {
-    return { error }
+    return { error };
   }
 };
 
@@ -265,17 +318,27 @@ const onCreateFinanceRelease = async (target) => {
     });
 
     if (result.error) {
-      alert("Erro ao adicionar novo dado financeiro.");
+      alert("Erro ao adicionar novo dado financeiro2.");
       return;
     }
     onCloseModal();
     onLoadFinancesData();
   } catch (error) {
-    alert("Erro ao adicionar novo dado financeiro.");
+    alert("Erro ao adicionar novo dado financeiro1.");
   }
 };
 
+const setInitialDate = () => {
+  const dateInput = document.getElementById("selected-date");
+  const nowDate = new Date().toISOString().split("T")[0];
+  dateInput.value = nowDate;
+  dateInput.addEventListener("change", () => {
+    onLoadFinancesData();
+  });
+};
+
 window.onload = () => {
+  setInitialDate();
   onLoadUserInfo();
   onLoadFinancesData();
   onLoadCategories();
@@ -284,5 +347,5 @@ window.onload = () => {
   form.onsubmit = (event) => {
     event.preventDefault();
     onCreateFinanceRelease(event.target);
-  }
+  };
 };

@@ -13,13 +13,16 @@ const onCallRegister = async (email, name) => {
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
-          "Content-type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       }
     );
+
+    const user = await response.json();
+    return user;
   } catch (error) {
-    return { error }
+    return { error };
   }
 };
 
@@ -43,9 +46,9 @@ const onRegister = async () => {
     alert("Falha ao validar e-mail.");
     return;
   }
-  localStorage.setItem("walletApp:userEmail", result.email);
-  localStorage.setItem("walletApp:userName", result.name);
-  localStorage.setItem("walletApp:Id", email.id);
+  localStorage.setItem("@WalletApp:userEmail", result.email);
+  localStorage.setItem("@WalletApp:userName", result.name);
+  localStorage.setItem("@WalletApp:userId", result.id);
   window.open("../home/index.html", "_self");
 };
 
